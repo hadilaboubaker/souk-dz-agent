@@ -1,7 +1,7 @@
 """Lightweight tests that don't hit the network."""
 from __future__ import annotations
 
-from datetime import datetime
+from datetime import datetime, timezone
 from pathlib import Path
 from tempfile import TemporaryDirectory
 
@@ -34,7 +34,7 @@ def _make_listing(**kwargs) -> Listing:
         external_id=str(kwargs.get("external_id", "id")),
         title="iPhone 13 64GB",
         price_dzd=10_000.0,
-        scraped_at=datetime.utcnow(),
+        scraped_at=datetime.now(timezone.utc),
     )
     defaults.update(kwargs)
     return Listing(**defaults)

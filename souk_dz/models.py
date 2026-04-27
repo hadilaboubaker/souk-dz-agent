@@ -1,11 +1,15 @@
 """Core data models passed between scrapers, AI, analysis, and reporting."""
 from __future__ import annotations
 
-from datetime import datetime
+from datetime import datetime, timezone
 from enum import Enum
 from typing import Optional
 
 from pydantic import BaseModel, Field, HttpUrl
+
+
+def _utcnow() -> datetime:
+    return datetime.now(timezone.utc)
 
 
 class SourceType(str, Enum):
@@ -38,7 +42,7 @@ class Listing(BaseModel):
     url: Optional[HttpUrl] = None
     image_url: Optional[HttpUrl] = None
     posted_at: Optional[datetime] = None
-    scraped_at: datetime = Field(default_factory=datetime.utcnow)
+    scraped_at: datetime = Field(default_factory=_utcnow)
 
 
 class NormalizedListing(BaseModel):
