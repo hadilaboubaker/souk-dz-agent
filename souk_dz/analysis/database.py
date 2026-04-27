@@ -5,7 +5,7 @@ import json
 import logging
 import sqlite3
 from contextlib import contextmanager
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 from souk_dz.models import NormalizedListing
@@ -113,7 +113,7 @@ class ListingsDB:
     # ------------------------------------------------------------------ reads
 
     def cluster_prices(self, cluster_key: str, history_days: int) -> list[float]:
-        cutoff = (datetime.utcnow() - timedelta(days=history_days)).isoformat()
+        cutoff = (datetime.now(timezone.utc) - timedelta(days=history_days)).isoformat()
         with self._conn() as conn:
             cur = conn.execute(
                 """
@@ -128,7 +128,7 @@ class ListingsDB:
             return [row[0] for row in cur.fetchall()]
 
     def prune_older_than(self, days: int) -> int:
-        cutoff = (datetime.utcnow() - timedelta(days=days)).isoformat()
+        cutoff = (datetime.now(timezone.utc) - timedelta(days=days)).isoformat()
         with self._conn() as conn:
             cur = conn.execute("DELETE FROM listings WHERE scraped_at < ?", (cutoff,))
             return cur.rowcount or 0
