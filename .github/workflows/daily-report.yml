@@ -1,0 +1,63 @@
+name: Daily report
+
+on:
+  schedule:
+    # 06:00 Africa/Algiers = 05:00 UTC
+    - cron: "0 5 * * *"
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "Run without sending the email"
+        type: boolean
+        default: false
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    permissions:
+      contents: write   # needed to commit the SQLite history back to the repo
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e .
+          python -m playwright install --with-deps chromium
+
+      - name: Restore listings history
+        uses: actions/cache@v4
+        with:
+          path: data/souk_dz.db
+          key: souk-dz-history-${{ github.run_id }}
+          restore-keys: |
+            souk-dz-history-
+
+      - name: Run pipeline
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          SMTP_HOST: ${{ secrets.SMTP_HOST }}
+          SMTP_PORT: ${{ secrets.SMTP_PORT }}
+          SMTP_USERNAME: ${{ secrets.SMTP_USERNAME }}
+          SMTP_PASSWORD: ${{ secrets.SMTP_PASSWORD }}
+          EMAIL_FROM: ${{ secrets.EMAIL_FROM }}
+          EMAIL_TO: ${{ secrets.EMAIL_TO }}
+          DRY_RUN: ${{ inputs.dry_run || 'false' }}
+        run: souk-dz run -v
+
+      - name: Upload report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: daily-report-${{ github.run_id }}
+          path: |
+            data/reports/*.xlsx
+            data/souk_dz.db
+          retention-days: 7

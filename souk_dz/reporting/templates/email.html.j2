@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <title>تقرير سوق-DZ — {{ today }}</title>
+</head>
+<body style="font-family: 'Segoe UI', Tahoma, sans-serif; background:#f5f7fa; padding:20px; color:#222;">
+  <div style="max-width:760px; margin:auto; background:#ffffff; border-radius:12px; padding:24px; box-shadow:0 2px 8px rgba(0,0,0,0.05);">
+    <h1 style="margin:0 0 4px; color:#0e4a8a;">📊 تقرير سوق-DZ اليومي</h1>
+    <p style="margin:0 0 18px; color:#666;">
+      <span dir="ltr">{{ today }}</span> · {{ total }} إعلان · {{ opportunities|length }} فرصة
+    </p>
+
+    {% if opportunities %}
+      <h2 style="color:#0e4a8a; border-bottom:2px solid #0e4a8a; padding-bottom:6px;">🥇 أفضل الفرص اليوم</h2>
+      <table cellpadding="8" cellspacing="0" style="width:100%; border-collapse:collapse; font-size:14px;">
+        <thead>
+          <tr style="background:#0e4a8a; color:#fff;">
+            <th style="text-align:right;">#</th>
+            <th style="text-align:right;">المنتج</th>
+            <th style="text-align:right;">السعر</th>
+            <th style="text-align:right;">متوسط السوق</th>
+            <th style="text-align:right;">الخصم</th>
+            <th style="text-align:right;">المصدر</th>
+            <th style="text-align:right;">الولاية</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for opp in opportunities %}
+            <tr style="background:{% if loop.index is odd %}#fff8e1{% else %}#fffde7{% endif %};">
+              <td>{{ loop.index }}</td>
+              <td>
+                {% if opp.listing.listing.url %}
+                  <a href="{{ opp.listing.listing.url }}" style="color:#0e4a8a; text-decoration:none;">
+                    <strong>{{ opp.listing.canonical_name }}</strong>
+                  </a>
+                {% else %}
+                  <strong>{{ opp.listing.canonical_name }}</strong>
+                {% endif %}
+                {% if opp.listing.brand %}<br><small style="color:#666;">{{ opp.listing.brand }}</small>{% endif %}
+              </td>
+              <td><strong style="color:#1b5e20;">{{ "{:,.0f}".format(opp.listing.listing.price_dzd) }} DA</strong></td>
+              <td>{{ "{:,.0f}".format(opp.median_price_dzd) }} DA</td>
+              <td><strong style="color:#c62828;">−{{ "%.1f"|format(opp.discount_percent) }}%</strong></td>
+              <td>{{ opp.listing.listing.source_label }}</td>
+              <td>{{ opp.listing.listing.wilaya or "—" }}</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    {% else %}
+      <p style="background:#fff3cd; padding:12px; border-radius:8px;">
+        ℹ️ لم يُكشف عن فرص ذات خصم ≥ {{ min_discount }}% اليوم. <br>
+        <small>قد يكون السبب: قاعدة بيانات حديثة لا تزال تتراكم، أو يوم بطيء في السوق. الوكيل سيتحسن مع تراكم البيانات.</small>
+      </p>
+    {% endif %}
+
+    <h3 style="color:#0e4a8a; margin-top:30px;">📈 إحصائيات اليوم</h3>
+    <ul style="font-size:14px; line-height:1.8;">
+      <li>إجمالي الإعلانات المجموعة: <strong>{{ total }}</strong></li>
+      <li>إعلانات بسعر مكتوب: <strong>{{ with_price }}</strong> ({{ "%.0f"|format(with_price/total*100 if total else 0) }}%)</li>
+      <li>عدد المجموعات (clusters): <strong>{{ clusters }}</strong></li>
+      <li>المصادر النشطة: <strong>{{ active_sources|length }}</strong> ({{ active_sources|join(", ") }})</li>
+    </ul>
+
+    <p style="margin-top:24px; padding:12px; background:#e3f2fd; border-radius:8px; font-size:13px;">
+      📎 تفاصيل كل الإعلانات + الفرص في الملف Excel المرفق.
+    </p>
+
+    <hr style="margin-top:30px; border:none; border-top:1px solid #eee;">
+    <p style="color:#888; font-size:12px;">
+      Souk-DZ Agent · مفتوح المصدر · يعمل تلقائياً عبر GitHub Actions
+    </p>
+  </div>
+</body>
+</html>

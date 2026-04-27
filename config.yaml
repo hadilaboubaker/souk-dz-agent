@@ -1,0 +1,89 @@
+# Souk-DZ Agent — Sources Configuration
+# Edit this file to add/remove sources. No code changes needed.
+
+# ============ Algerian classified sites (PRIMARY SOURCES) ============
+# These have publicly listed prices and are the most reliable signal.
+
+ouedkniss:
+  enabled: true
+  # Categories from https://www.ouedkniss.com/ — slug after /s/
+  # Examples: "telephones-smartphones", "informatique", "vetements", "electromenager"
+  categories:
+    - telephones-smartphones
+    - informatique
+    - electromenager
+    - mode-vetements
+    - cosmetique-bien-etre
+    - sport-loisir
+  pages_per_category: 2  # 32 listings per page
+  wilaya_filter: null  # null = all of Algeria, or e.g. "16" for Algiers
+
+zerbote:
+  enabled: true
+  base_url: https://ar.zerbote.com
+  categories:
+    - "ahjzh-alktrwnyt-w-khrwmnzlyt"          # Electronics & home appliances
+    - "alhwatf-walta-blat"                     # Phones & tablets
+    - "almlabs-walmwd"                         # Clothing & fashion
+    - "aljmal-walrfahyt"                       # Beauty & wellness
+  pages_per_category: 2
+
+soukalys:
+  enabled: true
+  base_url: https://soukalys.com
+  pages: 3
+
+prixalgerie:
+  enabled: true
+  base_url: https://prixalgerie.com
+  # Used as a price-reference baseline (typical retail price)
+  pages: 3
+
+# ============ Facebook (SECONDARY SOURCES) ============
+# Public pages only. Reliability is medium — many sellers say "Inbox" instead of price.
+# To find a Facebook Page ID, visit the page on https://findmyfbid.com
+
+facebook:
+  enabled: true
+  pages:
+    - { name: "Pro Shopping DZ",     url: "https://www.facebook.com/pro.shopping.dz/" }
+    - { name: "Saleh Electronics",   url: "https://www.facebook.com/salehelectronicstore/" }
+    - { name: "Algeria Deals",       url: "https://www.facebook.com/algeriadeals/" }
+  groups:
+    # Public groups only. Add your own via:  https://www.facebook.com/groups/<id>/
+    - { name: "eBay Algerie",        url: "https://www.facebook.com/groups/ebayalgerie/" }
+    - { name: "Digital Product DZ",  url: "https://www.facebook.com/groups/1260130705400659/" }
+  posts_per_source: 15
+
+# ============ TikTok (SECONDARY SOURCES) ============
+# We search by Algerian-relevant hashtags + specific accounts.
+
+tiktok:
+  enabled: true
+  hashtags:
+    - dzdropshipping
+    - dzcommerce
+    - dzshopping
+    - vente_algerie
+    - bonplandz
+    - dz_offer
+    - tjarat_dz
+  accounts: []  # Add specific @usernames here once you discover good ones
+  videos_per_source: 10
+
+# ============ Pipeline Behavior ============
+
+opportunity:
+  # An item is flagged as an "opportunity" if its price is at least
+  # this percentage below the median price for its product cluster.
+  min_discount_percent: 25
+  # Minimum number of comparable listings before computing a median.
+  min_cluster_size: 3
+  # How many days of historical data to keep.
+  history_days: 30
+
+categories_blacklist:
+  # Skip these (real-estate, vehicles — different arbitrage dynamics)
+  - immobilier
+  - vehicules
+  - voitures
