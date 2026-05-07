@@ -104,7 +104,7 @@ def organiser_produits_par_prix(
     if not produits:
         raise ValueError("Aucun produit à organiser.")
 
-    tries = _trier_et_indexer(list(produits))
+    tries = _trier_et_indexer([dict(p) for p in produits])
 
     wb = Workbook()
     ws = wb.active
