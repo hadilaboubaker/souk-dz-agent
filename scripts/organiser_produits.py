@@ -143,7 +143,7 @@ def _afficher_resume(produits: list[dict[str, object]]) -> None:
         print("(aucun prix numérique disponible)")
         return
 
-    largeur = max(len(cat) for cat in par_categorie)
+    largeur = max(len("categorie"), max(len(cat) for cat in par_categorie))
     entete = f"{'categorie'.ljust(largeur)}  {'min':>10}  {'max':>10}  {'moyenne':>10}  {'count':>6}"
     print(entete)
     print("-" * len(entete))
